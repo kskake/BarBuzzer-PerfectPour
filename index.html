@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Perfect Pour – BarBuzzer</title>
+  <meta name="description" content="The Perfect Pour: a fast-paced reflex game. Tap STOP at the perfect moment to fill your glass to the line. Master the timing and claim the title of Master Bartender!">
+
+  <!-- Favicon -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+
+  <!-- Game styles -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div id="site-header"></div>
+
+  <!-- ===== WELCOME SCREEN ===== -->
+  <div id="welcomeScreen" class="screen" role="main" aria-label="Welcome screen">
+
+    <div class="welcome-hero">
+      <div class="welcome-icon" aria-hidden="true">🍺</div>
+      <h1 class="game-title">THE PERFECT POUR</h1>
+      <p class="game-tagline">Master the timing, fill the glass,<br>and claim the title of <em>Master Bartender</em>.</p>
+    </div>
+
+    <div class="welcome-name-wrap">
+      <label for="playerNameInput" class="sr-only">Your name</label>
+      <input
+        id="playerNameInput"
+        type="text"
+        class="name-input"
+        placeholder="Enter your name…"
+        maxlength="20"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Enter your name"
+      />
+    </div>
+
+    <div class="welcome-scores" role="region" aria-label="High score">
+      <span class="hs-label">🏆 HIGH SCORE</span>
+      <span id="welcomeHighScore" class="hs-value">0</span>
+    </div>
+
+    <button id="startGameBtn" class="btn btn-primary btn-xl" aria-label="Start game">
+      START GAME
+    </button>
+
+    <!-- Instructions -->
+    <div class="instructions" role="region" aria-label="How to play">
+      <h2 class="instructions-title">HOW TO PLAY</h2>
+      <ol class="instructions-list">
+        <li>Tap <strong>START POUR</strong> — watch the glass fill!</li>
+        <li>Tap <strong>STOP!</strong> exactly at the glowing <span class="neon-text-cyan">target line</span>.</li>
+        <li><strong class="neon-text-gold">Perfect Pour</strong> = right on the line (+10 pts)</li>
+        <li><strong class="neon-text-blue">Close Pour</strong> = nearly there (+5–7 pts)</li>
+        <li><strong class="neon-text-gold">Streak</strong> = chain Perfect/Close pours for up to x3 points!</li>
+        <li><strong class="neon-text-red">BUST!</strong> = over the line (−5 pts)</li>
+        <li>Speed increases every 2 rounds. Stay sharp!</li>
+      </ol>
+    </div>
+
+    <!-- Leaderboard -->
+    <div id="welcomeLeaderboard" class="leaderboard-panel" role="region" aria-label="Leaderboard">
+      <h2 class="leaderboard-title">🏆 MASTER BARTENDERS</h2>
+      <ol id="welcomeLeaderboardList" class="leaderboard-list" aria-live="polite"></ol>
+      <p id="welcomeLeaderboardEmpty" class="leaderboard-empty" aria-live="polite">No scores yet — be the first!</p>
+    </div>
+
+  </div>
+
+  <!-- ===== GAME SCREEN ===== -->
+  <div id="gameScreen" class="screen hidden" aria-label="Active game" role="main">
+
+    <!-- HUD -->
+    <div id="hud" class="hud" role="status" aria-live="polite" aria-label="Game status">
+      <div class="hud-block">
+        <span class="hud-label">ROUND</span>
+        <span id="hudRound" class="hud-value">1 / 10</span>
+      </div>
+      <div class="hud-block hud-score">
+        <span class="hud-label">SCORE</span>
+        <span id="hudScore" class="hud-value neon-text-gold">0</span>
+      </div>
+      <div class="hud-block">
+        <span class="hud-label">STREAK</span>
+        <span id="hudStreak" class="hud-value">x1</span>
+      </div>
+      <div class="hud-block">
+        <span class="hud-label">SPEED</span>
+        <span id="hudSpeed" class="hud-value">NORMAL</span>
+      </div>
+    </div>
+
+    <!-- Glass Area -->
+    <div id="glassArea" class="glass-area" role="img" aria-label="Virtual glass filling up">
+
+      <!-- Glass type label -->
+      <div id="glassTypeLabel" class="glass-type-label" aria-hidden="true">BEER PINT</div>
+
+      <!-- Glass wrapper (holds SVG + fill-line) -->
+      <div id="glassWrapper" class="glass-wrapper" aria-hidden="true">
+        <!-- SVG inserted by JS -->
+      </div>
+
+      <!-- Score popup (shown after each tap) -->
+      <div id="scorePopup" class="score-popup hidden" aria-live="assertive" role="status"></div>
+
+    </div>
+
+    <!-- Round result message (brief) -->
+    <div id="roundResult" class="round-result hidden" aria-live="assertive" role="status"></div>
+
+    <!-- Action Button -->
+    <div class="action-area">
+      <button id="actionBtn" class="btn btn-action" aria-label="Start pouring">
+        START POUR
+      </button>
+    </div>
+
+    <!-- Distraction overlay -->
+    <div id="distractionOverlay" class="distraction-overlay hidden" aria-hidden="true"></div>
+
+  </div>
+
+  <!-- ===== GAME OVER SCREEN ===== -->
+  <div id="gameOverScreen" class="screen hidden" role="main" aria-label="Game over screen">
+
+    <div class="gameover-hero">
+      <div id="gameOverEmoji" class="gameover-emoji" aria-hidden="true">🍺</div>
+      <h2 id="gameOverTitle" class="gameover-title">GAME OVER</h2>
+      <p id="gameOverSubtitle" class="gameover-subtitle"></p>
+    </div>
+
+    <div id="gameOverScores" class="gameover-scores" role="region" aria-label="Final scores">
+      <div class="score-block">
+        <span class="score-block-label">YOUR SCORE</span>
+        <span id="gameOverScore" class="score-block-value neon-text-gold">0</span>
+      </div>
+      <div class="score-block">
+        <span class="score-block-label">HIGH SCORE</span>
+        <span id="gameOverHighScore" class="score-block-value neon-text-purple">0</span>
+      </div>
+    </div>
+
+    <div id="newHighScoreBadge" class="new-hs-badge hidden" role="status" aria-live="assertive">
+      🏆 NEW HIGH SCORE!
+    </div>
+
+    <!-- Final leaderboard -->
+    <div id="gameOverLeaderboard" class="leaderboard-panel" role="region" aria-label="Leaderboard">
+      <h2 class="leaderboard-title">🏆 MASTER BARTENDERS</h2>
+      <ol id="gameOverLeaderboardList" class="leaderboard-list" aria-live="polite"></ol>
+    </div>
+
+    <div class="gameover-actions">
+      <button id="playAgainBtn" class="btn btn-primary" aria-label="Play again">
+        PLAY AGAIN
+      </button>
+      <a href="/games/" class="btn btn-secondary" aria-label="Back to games">
+        ← GAMES
+      </a>
+    </div>
+
+  </div>
+
+  <script src="/scripts/load-partials.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
