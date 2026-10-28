@@ -17,10 +17,10 @@ const MAX_SPEED_MULTIPLIER    = 3.0;    // cap to keep the game playable
 const GLASS_CHANGE_ROUNDS     = 3;      // glass type rotates every N rounds
 const DISTRACTION_START_ROUND = 5;      // distractions begin at this round
 const SCORE_PERFECT           = 10;
-const PERFECT_WINDOW          = 0.015;  // |delta| <= this → Perfect
+const PERFECT_WINDOW          = 0.028;  // |delta| <= this → Perfect (generous for on-line stops)
 const CLOSE_WINDOW            = 0.045;  // |delta| <= this → Close
 const OFF_WINDOW              = 0.10;   // |delta| <= this → Off (beyond = Under)
-const BUST_WINDOW             = 0.02;   // overshoot beyond this → Bust
+const BUST_WINDOW             = 0.055;  // overshoot beyond this → Bust (allows foam + small visual error)
 const STREAK_MULT_STEP        = 0.25;   // multiplier gained per streak level
 const MAX_STREAK_MULT         = 3.0;    // multiplier cap
 const FILL_LINE_JITTER        = 0.04;   // ± random offset applied to scheduled fill line
@@ -380,6 +380,8 @@ function formatMultiplier(mult) {
 function evaluateScore(fillProgress, fillLineFrac, multiplier = 1) {
   const delta = fillProgress - fillLineFrac; // + = over, - = under
 
+  // Grace for on-line / under stops and foam visual offset on the pint.
+  // Only clearly over the line counts as a bust.
   if (delta > BUST_WINDOW) {
     return { result: 'bust',    points: SCORE_BUST, label: '💥 BUST!',          color: '#ff2d55' };
   }
@@ -814,3 +816,4 @@ playerNameInput.addEventListener('keydown', (e) => {
   renderLeaderboard(welcomeLeaderboardList, welcomeLeaderboardEmpty);
   showScreen('welcome');
 })();
+
